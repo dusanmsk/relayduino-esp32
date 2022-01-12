@@ -1,0 +1,93 @@
+author: msk
+description: Relayduino/esp32 firmware
+version: 0.2
+
+libs_version: ${mos.version}
+modules_version: ${mos.version}
+mongoose_os_version: ${mos.version}
+
+manifest_version: 2017-05-18
+
+# Optional. List of tags for online search.
+tags:
+  - c
+
+# List of files / directories with C sources. No slashes at the end of dir names.
+sources:
+  - src
+  - src/transport
+
+# List of dirs. Files from these dirs will be copied to the device filesystem
+filesystem:
+  - fs
+
+# Custom configuration entries, settable via "device configuration"
+# Below is a custom firmware configuration example.
+# Uncomment and modify according to your needs:
+
+# config_schema:
+#  - ["my_app", "o", {title: "My app custom settings"}]
+#  - ["my_app.bool_value", "b", false, {title: "Some boolean value"}]
+#  - ["my_app.string_value", "s", "", {title: "Some string value"}]
+#  - ["my_app.int_value", "i", 123, {title: "Some integer value"}]
+
+# These settings get compiled into the C structure, and can be accessed
+# from the C code this way:
+#
+# printf("Hello from %s!\n", mgos_sys_config_get_device_id());
+#
+# Settings are cool: can be modified remotely without full firmware upgrade!
+#
+# To see all available compiled settings, buid the firmware and open
+# build/gen/mgos_config.h file.
+#
+# Also, in this config_schema section, you can override existing
+# settings that has been created by other libraries. For example, debug log
+# level is 2 by default. For this firmware we can override it to 3:
+#
+# config_schema:
+#  - ["debug.level", 3]
+
+config_schema:
+
+  - ["masterboard.id", "i", 1, {title: "ID of master board"}]
+  - ["masterboard.slaves", "s", "ooooiiii", {title: "Type of slave boards [use 'O', 'o', 'I', 'i' to set type to output/input"}]
+  - ["masterboard.led_mode", "i", 0, {title: "Mode of receive LED blink. 0=on every received command on wire, 1=on every command for this masterboard, 2=on processed command only"}]
+
+  - ["masterboard.transport.udp.enabled", "b", true, {title: "UDP listener enabled"}]
+  - ["masterboard.transport.udp.listenport", "i", 6666, {title: "UDP listening port"}]
+  - ["masterboard.transport.udp.sendaddress", "s", "192.168.17.44", {title: "UDP send address"}]    # NAS
+  - ["masterboard.transport.udp.sendport", "i", 7777, {title: "UDP send port"}]
+
+  - ["debug.level", 2]
+  - ["debug.factory_reset_gpio", 34]
+
+  - ["eth.clk_mode", 3]
+  - ["eth.phy_pwr_gpio", 12]
+  - ["i2c.enable", true]
+  - ["i2c.sda_gpio", 13]
+  - ["i2c.scl_gpio", 16]
+  
+  - ["wifi.ap.ssid", "RELAYDUINO_MASTER"]
+
+  - ["debug.udp_log_addr", "192.168.17.44:6666"]
+
+  - ["test.lama", "s", "lama_user", {title: "lama"}]
+
+
+libs:
+  - origin: https://github.com/mongoose-os-libs/boards
+  - origin: https://github.com/mongoose-os-libs/ca-bundle
+  - origin: https://github.com/mongoose-os-libs/rpc-service-config
+  - origin: https://github.com/mongoose-os-libs/rpc-service-fs
+  - origin: https://github.com/mongoose-os-libs/rpc-service-i2c
+  - origin: https://github.com/mongoose-os-libs/rpc-service-ota  
+  - origin: https://github.com/mongoose-os-libs/rpc-udp
+  - origin: https://github.com/mongoose-os-libs/rpc-ws
+  - origin: https://github.com/mongoose-os-libs/rpc-uart
+  - origin: https://github.com/mongoose-os-libs/ota-http-server
+  - origin: https://github.com/mongoose-os-libs/mcp23xxx
+  #- origin: https://github.com/dusanmsk/mcp23xxx.git
+
+# Used by the mos tool to catch mos binaries incompatible with this file format
+# manifest_version: 2017-09-29

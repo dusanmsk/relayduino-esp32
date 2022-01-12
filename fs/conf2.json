@@ -1,0 +1,68 @@
+{
+    "board": {
+      "btn1": {
+        "pin": 34,
+        "pull_up": true
+      },
+      "led1": {
+        "active_high": true,
+        "pin": 32
+      },
+      "led2": {
+        "active_high": true,
+        "pin": 33
+      }
+    },
+    "debug": {
+      "factory_reset_gpio": 34,
+      "level": 1,
+      "udp_log_addr": "192.168.17.44:6666",
+      "udp_log_level": 3
+    },
+    "eth": {
+      "clk_mode": 3,
+      "enable": true,
+      "mdc_gpio": 23,
+      "mdio_gpio": 18,
+      "phy_addr": 0,
+      "phy_pwr_gpio": 12
+    },
+    "http": {
+      "enable": true,
+      "listen_addr": "80",
+      "upload_acl": "*"
+    },
+    "i2c": {
+      "debug": false,
+      "enable": true,
+      "freq": 100000,
+      "scl_gpio": 16,
+      "sda_gpio": 13,
+      "unit_no": 0
+    },
+    "masterboard": {
+      "id": 0,
+      "slaves": "iiiioooo"
+    },
+    "mcp23xxx": {
+      "i2caddr": 32,
+      "int_gpio": -1
+    },
+    "rpc": {
+      "enable": true,
+      "http_enable": true,
+      "ws": {
+        "enable": true
+      }
+    },
+    "transport": {
+      "udp": {
+        "enabled": true,
+        "listenport": 6666,
+        "sendaddress": "192.168.17.44",
+        "sendport": 7777
+      }
+    }
+}
+
+  
