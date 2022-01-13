@@ -34,8 +34,7 @@ bool OutputBoard::init() {
     mgos_mcp23xxx_gpio_write(mcp_dev, port - 1, false);
   }
 
-  // todo odkomentovat a doladit
-  // mgos_set_timer(1000, MGOS_TIMER_REPEAT, processTimeoutsCallback, this);
+  mgos_set_timer(1000, MGOS_TIMER_REPEAT, processTimeoutsCallback, this);
 
   return true;
 }
@@ -80,8 +79,6 @@ void OutputBoard::setPort(int port, int value) {
   }
 }
 
-
-// todo toto segfaultuje
 void OutputBoard::processTimeouts() {
   double now = mgos_uptime();
   for(int port = 1; port <= 16; port++ ) {

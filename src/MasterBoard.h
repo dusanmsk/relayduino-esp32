@@ -25,8 +25,7 @@ class MasterBoard : public ReceivedCommandProcessor {
         OutputBoard* outputBoards[8];
         InputBoard* inputBoards[8];
         bool presentBoards[8];
-        int errorNoCommandAfterMs = 10000;      // todo config
-        int errorIndicationTimerId;
+        int connectionLostCheckTimerId;
         long readCount;
 
         void resetConnectionLostIndicationTimer();
@@ -35,7 +34,7 @@ class MasterBoard : public ReceivedCommandProcessor {
         char getBoardType(int boardId);
         void initIOBoards();
         void setOutputPort(int outputBoard, int outputPort, int value);
-
+        
     public:
         MasterBoard();
         bool init();
@@ -51,6 +50,7 @@ class MasterBoard : public ReceivedCommandProcessor {
         }
 
         void processReceivedCommand(ReceivedCommand* command);
+        void processConnectionLost();
         void processInputBoardEvent(int boardId, int port, int value);
 
 };

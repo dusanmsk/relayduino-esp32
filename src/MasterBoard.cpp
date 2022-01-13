@@ -8,12 +8,12 @@
 
 using namespace std;
 
-static void redLedOn(void* p) {
-    mgos_gpio_write(LED_RED_PIN, true);
+static void setRedLed(bool value) {
+    mgos_gpio_write(LED_RED_PIN, value);
 }
 
-static void greenLedOff(void* p) {
-    mgos_gpio_write(LED_GREEN_PIN, false);
+static void setGreenLed(bool value) {
+    mgos_gpio_write(LED_GREEN_PIN, value);
 }
 
 static void logAllOutputsCallback(void *arg) {
@@ -22,6 +22,10 @@ static void logAllOutputsCallback(void *arg) {
 
 static void processTimeoutsCallback(void *arg) {
     ((MasterBoard*) arg)->processTimeouts();
+}
+
+static void connectionLostCallback(void* arg) {
+    ((MasterBoard*) arg)->processConnectionLost();
 }
 
 MasterBoard::MasterBoard() {
@@ -44,15 +48,18 @@ int MasterBoard::getId() {
 }
 
 void MasterBoard::resetConnectionLostIndicationTimer() {
-    mgos_clear_timer(errorIndicationTimerId);
-    errorIndicationTimerId = mgos_set_timer(errorNoCommandAfterMs, 0, redLedOn, NULL);
+    mgos_clear_timer(connectionLostCheckTimerId);
+    connectionLostCheckTimerId = mgos_set_timer(mgos_sys_config_get_masterboard_out_off_timeout()*1000,
+      0,
+      connectionLostCallback,
+      this);
 }
 
 void MasterBoard::processReceivedCommand(ReceivedCommand* command) {
     int ledMode = mgos_sys_config_get_masterboard_led_mode();
     int cmdProcessed = 0;
+    resetConnectionLostIndicationTimer();
     if(command->masterBoard == getId()) {
-      resetConnectionLostIndicationTimer();
       cmdProcessed++;
       if(command->outputBoard != -1) {
           this->setOutputPort(command->outputBoard, command->outputPort, command->value);
@@ -66,17 +73,19 @@ void MasterBoard::processReceivedCommand(ReceivedCommand* command) {
 
 void MasterBoard::setOutputPort(int outputBoardId, int outputPort, int value) {
     if(!(outputBoardId >=0 && outputBoardId <= 7) || outputBoards[outputBoardId] == NULL) {
-        LOG(LL_ERROR, ("Output board id %d not present", outputBoardId));
+        LOG(LL_WARN, ("Output board id %d not present", outputBoardId));
         return;
     }
     OutputBoard* outputBoard = this->outputBoards[outputBoardId];
     outputBoard->setPort(outputPort, value);
 }
 
+
+static void turnOffGreenLedCallback(void* arg) {setGreenLed(false);}
 void MasterBoard::blinkGreenLED() {
-    mgos_gpio_write(LED_GREEN_PIN, true);
-    mgos_set_timer(COMMAND_RECV_INDICATION_LED_MSEC, 0, greenLedOff, NULL);
-    mgos_gpio_write(LED_RED_PIN, false);        // turn off error indication
+    setGreenLed(true);
+    mgos_set_timer(COMMAND_RECV_INDICATION_LED_MSEC, 0, turnOffGreenLedCallback, NULL);
+    setRedLed(false);
 }
 
 
@@ -117,6 +126,19 @@ void MasterBoard::prepareBoardsTypeString(std::stringstream& out) {
       }
     }
     out << ch;
+  }
+}
+
+void MasterBoard::processConnectionLost() {
+    LOG(LL_INFO, ("Connection lost, no command for configured time received. Turning off all outputs."));
+    setRedLed(true);
+    for(int boardId = 0; boardId < 8; boardId++) {
+    OutputBoard* outputBoard = outputBoards[boardId];
+    if(outputBoard != NULL) {
+      for(int p = 1; p <= 16; p++) {
+        outputBoard->setPort(p, 0);
+      }
+    }
   }
 }
 

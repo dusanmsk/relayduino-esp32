@@ -1,0 +1,12 @@
+
+- spravit univerzalny dispatcher pre rozne transportne protokoly
+ Nieco ako Dispatcher(UdpTransport, MqttTransport, HttpTransport)
+ a ten dispatcher bude potom
+ prijimat commandy z jednotlivych transportov a posielat do MasterBoard
+ dispatchovat input port eventy do jednotlivych transportov
+
+- umoznit opakovane odosielanie hodnot z inputboardu v urcitom intervale (konfigurovatelne per port, inak by to bolo 128 sprav kazdy interval) - riesitelne suborom v esp (mos put), moze to byt cisty textak
+  a ten by potom overridoval nejaky globalny setting
+
+- timeout ako konfiguracna hodnota
+
