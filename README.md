@@ -24,6 +24,30 @@ When device was previously flashed with this firmware, you should update firmwar
 
 Masterboard will operate with id 1, slave boards 0-3 are output boards, slave boards 4-7 are input boards. Warning - double check this when you are lost and board seems not work as expected, maybe you misconfigured the board types (my own experience :D)!
 
+### connectivity
+
+#### ethernet
+
+When using ethernet connection, dhcp client is enabled by default. You can see ip address when using mos console over serial connection. To set static ip address on ethernet, just call
+
+    mos config-set eth.ip="192.168.5.123" eth.netmask="255.255.255.0" eth.gw="192.168.5.1"
+
+To enable dhcp, call
+
+     mos config-set eth.ip="" eth.netmask="" eth.gw=""
+
+#### wifi
+TODO
+
+#### wifi ap
+There is possibility to connect to board by wifi when ethernet or serial is not available. To turn on wifi, press 'btn1' button 10 times during 10 seconds (TODO implement). Then new wifi network will be available - RELAYDUINO_MASTER with default password 123456. You should connect to this wifi by laptop and configure masterboard this way. Device address will be 192.168.4.1, so export MOS_PORT=ws://192.168.4.1/rpc and then use mos tool as usual.
+
+WARNING!! Change wifi password as soon as possible after connect (mos config-set wifi.ap.pass="newPassword") and do not forget to disable wifi ap when done (mos config-set wifi.ap.enable=false).
+
+WARNING!! Wifi password will be set to default after using "reset to default" procedure (holding btn1+reset).
+
+
+
 ### Transports
 #### UDP
 For communication using udp packets (for example with loxone), configure following attributes
@@ -47,7 +71,8 @@ TODO - this may change in the future, maybe masterboards will not be identified 
 
 ## Debugging
 
-    mos config-set debug.udp_log_addr=THIS_PC_ADDR:7777
+    source ./env            # do not forget to edit this file
+    mos config-set debug.udp_log_addr=${THIS_PC_ADDRESS}:7777
     mos config-set debug.level=3
     while true; do nc -ul -p 7777; sleep 1; done
 

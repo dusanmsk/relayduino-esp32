@@ -53,6 +53,7 @@ config_schema:
   - ["masterboard.id", "i", 1, {title: "ID of master board"}]
   - ["masterboard.slaves", "s", "ooooiiii", {title: "Type of slave boards [use 'O', 'o', 'I', 'i' to set type to output/input"}]
   - ["masterboard.led_mode", "i", 0, {title: "Mode of receive LED blink. 0=on every received command on wire, 1=on every command for this masterboard, 2=on processed command only"}]
+  - ["masterboard.out_off_timeout", "i", 10, {title: "Turn off all outputs after specified seconds when no command receive"}]
 
   - ["masterboard.transport.udp.enabled", "b", true, {title: "UDP listener enabled"}]
   - ["masterboard.transport.udp.listenport", "i", 6666, {title: "UDP listening port"}]
@@ -71,9 +72,6 @@ config_schema:
   - ["wifi.ap.ssid", "RELAYDUINO_MASTER"]
 
   - ["debug.udp_log_addr", "192.168.17.44:6666"]
-
-  - ["test.lama", "s", "lama_user", {title: "lama"}]
-
 
 libs:
   - origin: https://github.com/mongoose-os-libs/boards
