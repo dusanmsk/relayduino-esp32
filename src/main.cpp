@@ -76,6 +76,37 @@ static void rpc_GetStats_handler(struct mg_rpc_request_info *ri, void *cb_arg, s
   ri = NULL;
 }
 
+static int button1_hold_counter = 0;
+static bool goingToReboot = false;
+static void button1_timer_handler(void* arg) {
+  // handle button
+  bool buttonHold = mgos_gpio_read(BUTTON1_PIN) == 0;
+  if(buttonHold) {
+    button1_hold_counter++;
+  } else if (!goingToReboot) {
+    button1_hold_counter--;
+  }
+  if(button1_hold_counter < 0) {
+    button1_hold_counter = 0;
+  }
+  // if hold for a while
+  if(button1_hold_counter == 20) {
+     goingToReboot = true;
+  }
+  // now wait to release a button
+  if(goingToReboot) {
+    if(buttonHold) {
+      masterBoard.blinkRedLED();
+    } else {
+      int oldValue = mgos_sys_config_get_wifi_ap_enable();
+      LOG(LL_INFO, ("Turning %s wifi AP and rebooting", oldValue == 1 ? "ON" : "OFF"));
+      mgos_sys_config_set_wifi_ap_enable(oldValue > 0 ? 0 : 1);
+      mgos_sys_config_save(&mgos_sys_config, false, NULL); 
+      mgos_system_restart();
+    }
+  }
+}
+
 
 enum mgos_app_init_result mgos_app_init(void) {
   LOG(LL_INFO, ("Initializing application v 777"));
@@ -90,6 +121,11 @@ enum mgos_app_init_result mgos_app_init(void) {
 
 
   mgos_set_timer(15000, MGOS_TIMER_REPEAT, hello_timer_callback, NULL);
+
+  // setup button1 handler
+  mgos_gpio_set_mode(BUTTON1_PIN, MGOS_GPIO_MODE_INPUT);
+  mgos_gpio_set_pull(BUTTON1_PIN, MGOS_GPIO_PULL_UP);
+  mgos_set_timer(250, MGOS_TIMER_REPEAT, button1_timer_handler, NULL);
 
   mg_rpc_add_handler(mgos_rpc_get_global(), "Foo.GetStats", "", rpc_GetStats_handler, NULL);
 

@@ -62,7 +62,14 @@
         "sendaddress": "192.168.17.44",
         "sendport": 7777
       }
-    }
+    },
+    "wifi": {
+      "ap": {
+        "enable": false,
+        "pass": "1234567890",
+        "ssid": "RELAYDUINO_MASTER"
+      }
+
 }
 
   

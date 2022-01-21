@@ -1,3 +1,5 @@
+- disablovat wifi ap v defaulte, nastavit mu heslo 123456 a vyrobit obsluzny kod co ho na 10 klikov zapne
+
 
 - spravit univerzalny dispatcher pre rozne transportne protokoly
  Nieco ako Dispatcher(UdpTransport, MqttTransport, HttpTransport)

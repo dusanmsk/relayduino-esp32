@@ -69,10 +69,6 @@ config_schema:
   - ["i2c.sda_gpio", 13]
   - ["i2c.scl_gpio", 16]
   
-  - ["wifi.ap.ssid", "RELAYDUINO_MASTER"]
-
-  - ["debug.udp_log_addr", "192.168.17.44:6666"]
-
 libs:
   - origin: https://github.com/mongoose-os-libs/boards
   - origin: https://github.com/mongoose-os-libs/ca-bundle

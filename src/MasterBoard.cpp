@@ -8,14 +8,6 @@
 
 using namespace std;
 
-static void setRedLed(bool value) {
-    mgos_gpio_write(LED_RED_PIN, value);
-}
-
-static void setGreenLed(bool value) {
-    mgos_gpio_write(LED_GREEN_PIN, value);
-}
-
 static void logAllOutputsCallback(void *arg) {
     ((MasterBoard*) arg)->logAllOutputs();
 }
@@ -48,6 +40,7 @@ int MasterBoard::getId() {
 }
 
 void MasterBoard::resetConnectionLostIndicationTimer() {
+    setRedLed(false);
     mgos_clear_timer(connectionLostCheckTimerId);
     connectionLostCheckTimerId = mgos_set_timer(mgos_sys_config_get_masterboard_out_off_timeout()*1000,
       0,
@@ -66,7 +59,8 @@ void MasterBoard::processReceivedCommand(ReceivedCommand* command) {
           cmdProcessed++;
       }
     }
-    if(cmdProcessed == ledMode) {
+    //LOG(LL_DEBUG, ("cmdProcessed=%d, ledMode=%d", cmdProcessed, ledMode));
+    if(cmdProcessed >= ledMode) {
       blinkGreenLED();
     }
 }
@@ -85,9 +79,13 @@ static void turnOffGreenLedCallback(void* arg) {setGreenLed(false);}
 void MasterBoard::blinkGreenLED() {
     setGreenLed(true);
     mgos_set_timer(COMMAND_RECV_INDICATION_LED_MSEC, 0, turnOffGreenLedCallback, NULL);
-    setRedLed(false);
 }
 
+static void turnOffRedLedCallback(void* arg) {setRedLed(false);}
+void MasterBoard::blinkRedLED() {
+    setRedLed(true);
+    mgos_set_timer(RED_LED_BLINK_MSEC, 0, turnOffRedLedCallback, NULL);
+}
 
 void MasterBoard::getStatistics(struct json_out *out) {
   std::stringstream ss1;
