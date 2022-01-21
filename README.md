@@ -40,11 +40,17 @@ To enable dhcp, call
 TODO
 
 #### wifi ap
-There is possibility to connect to board by wifi when ethernet or serial is not available. To turn on wifi, press 'btn1' button 10 times during 10 seconds (TODO implement). Then new wifi network will be available - RELAYDUINO_MASTER with default password 123456. You should connect to this wifi by laptop and configure masterboard this way. Device address will be 192.168.4.1, so export MOS_PORT=ws://192.168.4.1/rpc and then use mos tool as usual.
+There is possibility to connect to board by wifi when ethernet or serial is not available. To turn on wifi, hold 'btn1' button until red led start flashing, then release button. Board will be restarted with AP turned on on wifi network RELAYDUINO_MASTER with default password 1234567890. You should connect to this wifi by laptop and configure masterboard this way. Device address will be 192.168.4.1, so export MOS_PORT=ws://192.168.4.1/rpc and then use mos tool as usual. To turn off AP, hold button again, or use config-set as mentioned below
 
-WARNING!! Change wifi password as soon as possible after connect (mos config-set wifi.ap.pass="newPassword") and do not forget to disable wifi ap when done (mos config-set wifi.ap.enable=false).
+WARNING!! Change wifi password as soon as possible after connect (8+ chars)
 
-WARNING!! Wifi password will be set to default after using "reset to default" procedure (holding btn1+reset).
+    mos config-set wifi.ap.pass="newPassword"
+    
+and do not forget to disable wifi ap when done
+
+    mos config-set wifi.ap.enable=false
+
+WARNING!! Wifi password will be set to default after using "reset to default" procedure (holding btn1+reset) or reflashing device !
 
 
 
@@ -71,10 +77,9 @@ TODO - this may change in the future, maybe masterboards will not be identified 
 
 ## Debugging
 
-    source ./env            # do not forget to edit this file
-    mos config-set debug.udp_log_addr=${THIS_PC_ADDRESS}:7777
-    mos config-set debug.level=3
-    while true; do nc -ul -p 7777; sleep 1; done
+    source ./env   ;         # do not forget to edit this file
+    mos config-set debug.level=3 debug.udp_log_addr=${THIS_PC_ADDRESS}:7777 ;
+    socat -u udp-recv:7777 -
 
 Do not forget to set loglevel to 0 when finished (it has a performance impact)
 
@@ -90,5 +95,6 @@ To manually check input board events, you should listen at your PC for input eve
 
     mos config-set masterboard.transport.udp.sendaddress="THIS_PC_ADDRESS"
     mos config-set masterboard.transport.udp.sendport=3333
-    while true; do nc -ul -p 3333; sleep 1; done
+    socat -u udp-recv:3333 -
+
 

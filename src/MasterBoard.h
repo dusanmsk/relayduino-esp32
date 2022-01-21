@@ -8,6 +8,7 @@
 #define BUTTON1_PIN    34
 
 #define COMMAND_RECV_INDICATION_LED_MSEC 50
+#define RED_LED_BLINK_MSEC 150
 
 #include <vector>
 #include <sstream>
@@ -16,6 +17,15 @@
 #include "InputBoard.h"
 #include "OutputBoard.h"
 #include "transport/Command.h"
+
+static inline void setRedLed(bool value) {
+    mgos_gpio_write(LED_RED_PIN, value);
+}
+
+static inline void setGreenLed(bool value) {
+    mgos_gpio_write(LED_GREEN_PIN, value);
+}
+
 
 class MasterBoard : public ReceivedCommandProcessor {
 
@@ -40,6 +50,7 @@ class MasterBoard : public ReceivedCommandProcessor {
         bool init();
         int getId();
         void blinkGreenLED();
+        void blinkRedLED();
         void readInputBoards();
         void processTimeouts();
         void logAllOutputs();
