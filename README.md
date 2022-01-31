@@ -85,7 +85,7 @@ Do not forget to set loglevel to 0 when finished (it has a performance impact)
 
 To manually test udp transport, you should send command from linux desktop by using:
 
-    echo "om1 b1 r2 1" >/dev/udp/MASTERBOARD_IP_ADDRESS/UDP_LISTEN_PORT
+    echo "om1 b1 r2 1" >/dev/udp/${ESP_IP_ADDRESS}/${ESP_UDP_LISTEN_PORT}
 
 For example
 

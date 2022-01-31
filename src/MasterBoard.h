@@ -31,7 +31,6 @@ class MasterBoard : public ReceivedCommandProcessor {
 
     private:
         std::vector<SendCommandProcessor*> sendCommandProcessors;
-        int masterBoardId;
         OutputBoard* outputBoards[8];
         InputBoard* inputBoards[8];
         bool presentBoards[8];

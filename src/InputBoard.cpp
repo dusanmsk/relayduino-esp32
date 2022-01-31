@@ -49,10 +49,14 @@ bool InputBoard::init() {
 /**
  * Read input pins and call callback when pin value has changed
  */
+static long fail_read_skip_cnt = 0L;
 void InputBoard::readInputs() {
   uint16_t _gpio = 0;
   if (!mgos_i2c_read_reg_n(mcp_dev->i2c, mcp_dev->i2caddr, MCP23XXX_REG_GPIO * mcp_dev->_w, mcp_dev->_w, (uint8_t *)&_gpio)) {
-    LOG(LL_ERROR,("Failed to read inputs on board %s", boardIdString));
+    if(fail_read_skip_cnt++ > 100000) {
+      LOG(LL_ERROR,("Failed to read inputs on board %s", boardIdString));
+      fail_read_skip_cnt = 0;
+    }
   }
 
   /*
