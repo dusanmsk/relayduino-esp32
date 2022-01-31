@@ -21,7 +21,6 @@ static void connectionLostCallback(void* arg) {
 }
 
 MasterBoard::MasterBoard() {
-    masterBoardId =  mgos_sys_config_get_masterboard_id();
 }
 
 bool MasterBoard::init() {
@@ -36,7 +35,7 @@ bool MasterBoard::init() {
 }
 
 int MasterBoard::getId() {
-    return masterBoardId;
+    return mgos_sys_config_get_masterboard_id();
 }
 
 void MasterBoard::resetConnectionLostIndicationTimer() {
@@ -59,13 +58,21 @@ void MasterBoard::processReceivedCommand(ReceivedCommand* command) {
           cmdProcessed++;
       }
     }
-    //LOG(LL_DEBUG, ("cmdProcessed=%d, ledMode=%d", cmdProcessed, ledMode));
     if(cmdProcessed >= ledMode) {
       blinkGreenLED();
     }
 }
 
 void MasterBoard::setOutputPort(int outputBoardId, int outputPort, int value) {
+    LOG(LL_DEBUG, ("Requested to set port %d of board %d to %d", outputPort, outputBoardId, value));
+    char boardType = getBoardType(outputBoardId);
+    if(boardType == 'i') {
+      LOG(LL_WARN, ("Slave board id %d is input board, can't set output port", outputBoardId));
+      return;
+    } else if (boardType == '-') {
+      LOG(LL_WARN, ("Output board id %d not present", outputBoardId));
+      return;
+    }
     if(!(outputBoardId >=0 && outputBoardId <= 7) || outputBoards[outputBoardId] == NULL) {
         LOG(LL_WARN, ("Output board id %d not present", outputBoardId));
         return;
