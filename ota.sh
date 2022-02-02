@@ -1,17 +1,21 @@
 #!/bin/bash
 source ./env
 
+echo "Getting configuration"
+mos get conf9.json > conf9.json
 
-# TODO - znizit loglevel, zavolat Halt (system nebude tak vytrazeny a update bude rychlejsi)
-OLD_LEVEL=`mos config-get debug.level`
+echo "Flashing ..."
 mos config-set debug.level=0
-
 #curl -v -F file=@build/fw.zip http://${ESP_IP_ADDRESS}/update
 mos ota --port ws://$ESP_IP_ADDRESS/rpc build/fw.zip
 
-echo "Sleeping then commiting ..."
-sleep 10
+echo "Restoring configuration"
+mos put conf9.json
+
+echo "Sleeping, then commiting ..."
+sleep 5
 mos call Ota.Commit
 echo "Image commited"
-mos config-set debug.level=$OLD_LEVEL
+
+
 
