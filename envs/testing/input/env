@@ -1,0 +1,6 @@
+export ESP_IP_ADDRESS=192.168.100.198
+# ESP ip address when using ESP wifi-ap
+#export ESP_IP_ADDRESS=192.168.4.1
+
+export MOS_PORT=ws://${ESP_IP_ADDRESS}/rpc
+export THIS_PC_ADDRESS="`ip a show dev enp0s3 | grep "inet " | cut -f6 -d' ' | cut -f1 -d'/'`"
